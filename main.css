@@ -1,3 +1,7 @@
 * {
 	border-style: border-box;
 }
+
+.hidden {
+    visibility: hidden;
+}
