@@ -1,44 +1,72 @@
-// http://api.worldweatheronline.com/free/v2/ski.ashx
-//HTTP: http://api.worldweatheronline.com/premium/v1/ski.ashx
-var apiurl = 'http://api.worldweatheronline.com/premium/v1/ski.ashx';
-var days = 5;
+var apiurl = 'http://api.exchangeratelab.com/api/single/';
+
 var state = {
-	address: '',
+	currencySelected: '',
+	currencySymbol: {
+		GBP: '£ ',
+		EUR: '€ ',
+		CAD: '$ ',
+		AUD: '$ ',
+		CNY: '¥ ',
+		INR: '₹ ',
+		JPY: '¥ '
+			},
+	rate: '',
 	items: []
 };
 
+var settings = {
+	url: ''
+}
 
-$('#search-form').submit(function(event) {
-		console.log('submit');
-		event.preventDefault();
-		searchTerm = $('#query-text').val();
-		retrieveFromAPI(searchTerm, days, displaySearchResults);
-		//displaysearchresuls is callback
+$('#currency-select').submit(function(event) {
+	console.log('submit');
+	event.preventDefault();
+	searchTerm = $('#currency-query').val();
+	retrieveFromAPI(searchTerm, displaySearchResults);
 });
 
 
-function retrieveFromAPI(searchTerm, days, callback) {
-	//callback not supported?
+function retrieveFromAPI(searchTerm, callback) {
 	console.log(searchTerm);
+	state.currencySelected = searchTerm;
 	var query = {
-		q: searchTerm,
-		num_of_days: days,
-		key: '584ee9d7e5ae405887443400170301',
-		format: 'json'
+		apikey: '8E8DE93BC3058E1955BF5EAA3EBFF8A7',
+		dataType: 'jsonp'
 	}
-	$.getJSON(apiurl, query, callback)
-} //callback?
-
+	$.get(apiurl + searchTerm, query, callback)
+}
 
 
 function displaySearchResults(data) {
 	console.log(data);
-	var searchResults = '';
+	var searchResults = [];
+	state.rate = data.rate.rate;
+
+	console.log(state.items);
+	renderRates();
+}
+
+
+function renderRates() {
+	var rate = '<div>' + state.currencySymbol[state.currencySelected] + state.rate + '</div>';
+//	state.items.forEach(function(item){
+//		rates += '<div>' + item.to + '<br/>' + item.rate + '</div>';
+//	}); 
+	$('#results-div').empty().append(rate)
+	//$(state.items).html('#results-div')
+}
+
+//enter desired rate
+//have an array of flag urls
+
+
+/*
 	if (data.data.weather.length > 0) {
     data.data.weather.forEach(function(item) {
     searchResults += '<p>' + item.totalSnowfall_cm + '</p>';
     });
-  }
+ }
 //push results into state opject
 //location then weather
 //each search adds new results div
@@ -51,11 +79,4 @@ function displaySearchResults(data) {
   $('#results-div').empty().append(searchResults);
 }
 // 
-
-/*
-parameters:
-p search term
-format json
-key 584ee9d7e5ae405887443400170301
-
 */
